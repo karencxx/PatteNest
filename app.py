@@ -133,22 +133,22 @@ if 'stitched_img' in st.session_state:
     st.markdown("---")
     st.subheader("👀 拼接效果预览")
     
-    # 1. 生成缩略图用于网页渲染
+    # 1. 网页预览专用：生成等比例缩略图（长边控制在 2000 像素以内，完全不会触发解压炸弹报错）
     preview_img = st.session_state['stitched_img'].copy()
-    preview_img.thumbnail((2000, 2000))  # 进一步安全限制预览图尺寸
+    preview_img.thumbnail((2000, 2000))
     
-    # 2. 将缩略图转为字节流，避免触发 Streamlit 内部的 DecompressionBombError 检查
+    # 2. 将缩略图转为字节流，彻底绕过 Streamlit 内部对 PIL 对象的直接校验
     img_byte_arr = io.BytesIO()
     preview_img.save(img_byte_arr, format='JPEG', quality=90)
     img_byte_arr.seek(0)
     
-    # 3. 渲染预览（顺便将过时的 use_container_width 替换为 width='stretch'）
+    # 3. 渲染预览（已将旧的 use_container_width 替换为最新的 width='stretch'）
     st.image(img_byte_arr, caption="拼接后整体效果预览（网页显示已轻微压缩，下载文件为原图无损高清）", width='stretch')
     
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
     if export_format == "PDF 文档":
-        # 导出原图高清 PDF
+        # 导出原图高清 PDF（下载时使用内存中的原始完整大图 st.session_state['stitched_img']，画质无损）
         pdf_buffer = io.BytesIO()
         img_w, img_h = st.session_state['stitched_img'].size
         pdf_doc = fitz.open()
