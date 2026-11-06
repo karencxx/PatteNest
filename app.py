@@ -39,7 +39,7 @@ def generate_stitched_image(uploaded_file, rows, margin_px):
     is_column_first = True  # 列优先拼接
 
     images = []
-    zoom = 3.0  # 3.0 倍超高清渲染
+    zoom = 2.0  # 2.0 倍超高清渲染
     mat = fitz.Matrix(zoom, zoom)
 
     for page in doc:
