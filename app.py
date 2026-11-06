@@ -133,10 +133,17 @@ if 'stitched_img' in st.session_state:
     st.markdown("---")
     st.subheader("👀 拼接效果预览")
     
-    # 💡 优化项：生成缩略图用于网页渲染，防止触发 Pillow 像素安全报警和内存溢出
+    # 1. 生成缩略图用于网页渲染
     preview_img = st.session_state['stitched_img'].copy()
-    preview_img.thumbnail((2500, 2500))  # 限制预览图长边不超过 2500px
-    st.image(preview_img, caption="拼接后整体效果预览（网页显示已轻微压缩，下载文件为原图无损高清）", use_container_width=True)
+    preview_img.thumbnail((2000, 2000))  # 进一步安全限制预览图尺寸
+    
+    # 2. 将缩略图转为字节流，避免触发 Streamlit 内部的 DecompressionBombError 检查
+    img_byte_arr = io.BytesIO()
+    preview_img.save(img_byte_arr, format='JPEG', quality=90)
+    img_byte_arr.seek(0)
+    
+    # 3. 渲染预览（顺便将过时的 use_container_width 替换为 width='stretch'）
+    st.image(img_byte_arr, caption="拼接后整体效果预览（网页显示已轻微压缩，下载文件为原图无损高清）", width='stretch')
     
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
