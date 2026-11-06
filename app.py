@@ -131,18 +131,8 @@ if uploaded_file is not None:
 # ==================== 预览与下载模块 ====================
 if 'stitched_img' in st.session_state:
     st.markdown("---")
-    st.subheader("👀 拼接效果预览")
-    
-    # 💡 关键修复：生成等比例缩略图并转为字节流，彻底解决超大图片在前端预览触发的 DecompressionBombError
-    preview_img = st.session_state['stitched_img'].copy()
-    preview_img.thumbnail((2000, 2000))
-    
-    img_byte_arr = io.BytesIO()
-    preview_img.save(img_byte_arr, format='JPEG', quality=90)
-    img_byte_arr.seek(0)
-    
-    # 渲染预览（使用最新的 width='stretch' 参数）
-    st.image(img_byte_arr, caption="拼接后整体效果预览（网页显示已轻微压缩，下载文件为原图无损高清）", width='stretch')
+    st.subheader("📥 纸样拼接完成，请直接下载")
+    st.info("💡 提示：由于多页纸样拼接后分辨率极高（达数亿像素），为防止网页预览崩溃或内存报错，工具已跳过网页直接预览。您可以直接点击下方按钮下载高清无损的结果文件进行打印或查看！")
     
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
